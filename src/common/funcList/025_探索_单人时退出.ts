@@ -1,0 +1,85 @@
+import { Script } from '@/system/script';
+import { IFuncOrigin, IFuncOperatorOrigin, IFuncOperator } from '@/interface/IFunc';
+
+// const normal = -1; //定义常量
+const left = 0;
+const center = 1;
+const right = 2;
+
+export class Func025 implements IFuncOrigin {
+	id = 25;
+	name = '探索_单人时退出';
+	desc = '探索小怪界面时，若只有自己一个人在里面，则退出';
+	operator: IFuncOperatorOrigin[] = [{
+		desc: [1280, 720, // 0 组队匹配上了的话就不做任何操作
+			[
+				[left, 46, 36, 0xf7e3a5],
+				[left, 29, 672, 0x615a77],
+				[right, 1227, 30, 0xd3af84],
+				[right, 1174, 33, 0xd7b287],
+				[left, 64, 456, 0xf6f6e9],
+				[left, 72, 444, 0x483726]
+			]
+		],
+		oper: [
+			[left, 1280, 720, 32, 45, 70, 86, 1000],
+			[center, 1280, 720, 700, 386, 850, 418, 2000]
+		]
+	}, { // 1 探索界面
+		desc: [1280, 720,
+			[
+				[left, 29, 672, 0x615a77],
+				[left, 54, 60, 0xdec38c],
+				[left, 124, 26, 0xf7eeb5],
+				[right, 1163, 22, 0xd7b288],
+				[right, 1223, 21, 0xd4ae84],
+			]
+		],
+	}, { // 2 确认退出探索，该色组取点不太好，但考虑上面一步已执行过，暂时不修改，待后续慢设备反馈再考虑重新取点
+		desc: [1280, 720,
+			[
+				[center, 340, 261, 0x472b18],
+				[center, 938, 261, 0xe19398],
+				[center, 560, 327, 0xffcf57],
+				[center, 722, 326, 0xc46823],
+				[center, 539, 401, 0xa56942],
+				[center, 729, 404, 0x6b413e]]
+		],
+		oper: [
+			[center, 1280, 720, 700, 386, 848, 420, 1000]
+		]
+	}, { // 3 探索入口界面
+		desc: [1280, 720,
+			[
+				[left, 114, 21, 0xf7eeb5],
+				[left, 33, 32, 0xf7efb0],
+				[left, 201, 494, 0x31110a],
+				[left, 201, 219, 0x2c0f0a],
+				[right, 1238, 31, 0xd3ae84],
+			]
+		],
+		oper: [
+			[center, 1280, 720, 20, 10, 64, 52, 1000],
+		]
+	}]
+	operatorFunc(thisScript: Script, thisOperator: IFuncOperator[]): boolean {
+		if (thisScript.oper({
+			name: '探索界面',
+			operator: [{ desc: thisOperator[1].desc }]
+		})) {
+			if (!thisScript.oper({
+				name: '是否组队',
+				operator: [{ desc: thisOperator[0].desc }]
+			})) {
+				thisScript.regionClick(thisOperator[0].oper)
+				return true;
+			}
+		}
+		if (thisScript.oper({
+			name: '探索入口界面',
+			operator: [thisOperator[3]]
+		})) {
+			return true;
+		}
+	}
+}
